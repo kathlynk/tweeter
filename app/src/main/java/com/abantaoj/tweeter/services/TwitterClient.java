@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.abantaoj.tweeter.BuildConfig;
 import com.abantaoj.tweeter.R;
+import com.codepath.asynchttpclient.RequestParams;
+import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.codepath.oauth.OAuthBaseClient;
 import com.github.scribejava.apis.TwitterApi;
 import com.github.scribejava.core.builder.api.BaseApi;
@@ -29,5 +31,13 @@ public class TwitterClient extends OAuthBaseClient {
                 null,
                 String.format(REST_CALLBACK_URL_TEMPLATE, context.getString(R.string.intent_host),
                         context.getString(R.string.intent_scheme), context.getPackageName(), FALLBACK_URL));
+    }
+
+    public void getHomeTimeline(JsonHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("statuses/home_timeline.json");
+        RequestParams params = new RequestParams();
+        params.put("count", 25);
+        params.put("since_id", 1);
+        client.get(apiUrl, params, handler);
     }
 }

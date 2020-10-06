@@ -1,11 +1,13 @@
 package com.abantaoj.tweeter.ui.login;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.abantaoj.tweeter.R;
 import com.abantaoj.tweeter.services.TwitterClient;
+import com.abantaoj.tweeter.ui.timeline.TimelineActivity;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
 
 public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
@@ -22,6 +24,8 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
     @Override
     public void onLoginSuccess() {
         Log.d(TAG, "login success");
+        Intent intent = new Intent(this, TimelineActivity.class);
+        startActivity(intent);
     }
 
     @Override

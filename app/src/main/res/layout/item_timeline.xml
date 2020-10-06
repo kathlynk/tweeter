@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="tweet"
+            type="com.abantaoj.tweeter.models.Tweet" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".ui.timeline.TimelineItemActivity">
+
+        <ImageView
+            android:id="@+id/item_timeline_avatar_image_view"
+            android:layout_width="@dimen/avatar_size"
+            android:layout_height="@dimen/avatar_size"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/content_attr_avatar"
+            android:scaleType="centerCrop"
+            app:profileImageUrl="@{tweet.user.profileImageUrl}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/item_timeline_username_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@{tweet.user.name}"
+            app:layout_constraintStart_toEndOf="@+id/item_timeline_avatar_image_view"
+            app:layout_constraintTop_toTopOf="@+id/item_timeline_avatar_image_view"
+            tools:text="User Name" />
+
+        <TextView
+            android:id="@+id/item_timeline_handle_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@{@string/handle(tweet.user.handle)}"
+            app:layout_constraintBottom_toBottomOf="@+id/item_timeline_username_text_view"
+            app:layout_constraintStart_toEndOf="@+id/item_timeline_username_text_view"
+            app:layout_constraintTop_toTopOf="@+id/item_timeline_avatar_image_view"
+            tools:text="\@username" />
+
+        <TextView
+            android:id="@+id/item_timeline_body_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@{tweet.body}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/item_timeline_avatar_image_view"
+            app:layout_constraintTop_toBottomOf="@+id/item_timeline_username_text_view"
+            tools:text="Donec bibendum mauris orci, eu viverra diam pellentesque sit amet. Etiam porttitor viverra purus. Ut lacinia ex magna, nec aliquam justo egestas et. Ut vel nulla leo. Suspendisse fermentum ut sapien id dapibus. Mauris ullamcorper finibus purus vel laoreet. Proin rutrum tortor eu." />
+
+        <TextView
+            android:id="@+id/item_timeline_timestamp_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:createdAt="@{tweet.createdAt}"
+            app:layout_constraintBottom_toBottomOf="@+id/item_timeline_handle_text_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/item_timeline_handle_text_view"
+            tools:text="6h" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

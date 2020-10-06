@@ -6,6 +6,7 @@
     <string name="intent_scheme">oauth</string>
     <string name="intent_host">cprest</string>
     <string name="login_failed">Login Failed!</string>
-
+    <string name="content_attr_avatar">avatar</string>
+    <string name="handle">\@%1$s</string>
 
 </resources>
