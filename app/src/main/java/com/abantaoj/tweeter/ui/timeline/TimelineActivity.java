@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.abantaoj.tweeter.R;
 import com.abantaoj.tweeter.TweeterApplication;
@@ -29,7 +31,8 @@ public class TimelineActivity extends AppCompatActivity {
     private ActivityTimelineBinding binding;
     private TwitterClient client;
     private List<Tweet> tweets;
-    private RecyclerView.Adapter<TimelineAdapter.ViewHolder> adapter;
+    private TimelineAdapter adapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,16 @@ public class TimelineActivity extends AppCompatActivity {
         adapter = new TimelineAdapter(this, tweets);
 
         setupRecyclerView();
+        setupRefreshLayout();
         populateHomeTimeline();
+    }
+
+    private void setupRefreshLayout() {
+        binding.timelineSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(this, android.R.color.holo_blue_light));
+        binding.timelineSwipeRefreshLayout.setOnRefreshListener(() -> {
+            Log.d(TAG, "refreshing data");
+            populateHomeTimeline();
+        });
     }
 
     private void setupRecyclerView() {
@@ -59,8 +71,9 @@ public class TimelineActivity extends AppCompatActivity {
                 JSONArray jsonArray = json.jsonArray;
 
                 try {
-                    tweets.addAll(Tweet.fromJsonArray(jsonArray));
-                    adapter.notifyDataSetChanged();
+                    adapter.clear();
+                    adapter.addAll(Tweet.fromJsonArray(jsonArray));
+                    binding.timelineSwipeRefreshLayout.setRefreshing(false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

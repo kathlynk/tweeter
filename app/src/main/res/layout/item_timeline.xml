@@ -23,11 +23,11 @@
             android:layout_marginTop="8dp"
             android:contentDescription="@string/content_attr_avatar"
             android:scaleType="centerCrop"
-            app:profileImageUrl="@{tweet.user.profileImageUrl}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
+            app:profileImageUrl="@{tweet.user.profileImageUrl}"
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
@@ -36,6 +36,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="@{tweet.user.name}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/item_timeline_avatar_image_view"
             app:layout_constraintTop_toTopOf="@+id/item_timeline_avatar_image_view"
             tools:text="User Name" />
@@ -46,9 +48,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@{@string/handle(tweet.user.handle)}"
-            app:layout_constraintBottom_toBottomOf="@+id/item_timeline_username_text_view"
+            app:layout_constraintBaseline_toBaselineOf="@+id/item_timeline_username_text_view"
             app:layout_constraintStart_toEndOf="@+id/item_timeline_username_text_view"
-            app:layout_constraintTop_toTopOf="@+id/item_timeline_avatar_image_view"
             tools:text="\@username" />
 
         <TextView
@@ -60,6 +61,9 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:text="@{tweet.body}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:autoLink="all"
+            android:linksClickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/item_timeline_avatar_image_view"
@@ -70,12 +74,22 @@
             android:id="@+id/item_timeline_timestamp_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             app:createdAt="@{tweet.createdAt}"
-            app:layout_constraintBottom_toBottomOf="@+id/item_timeline_handle_text_view"
+            app:layout_constraintBottom_toBottomOf="@+id/item_timeline_username_text_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/item_timeline_handle_text_view"
+            app:layout_constraintStart_toEndOf="@+id/item_timeline_bullet"
             tools:text="6h" />
+
+        <TextView
+            android:id="@+id/item_timeline_bullet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="@string/bullet"
+            app:layout_constraintBaseline_toBaselineOf="@+id/item_timeline_handle_text_view"
+            app:layout_constraintStart_toEndOf="@+id/item_timeline_handle_text_view"
+            tools:text="\u2022" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

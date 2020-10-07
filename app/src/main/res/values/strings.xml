@@ -8,5 +8,6 @@
     <string name="login_failed">Login Failed!</string>
     <string name="content_attr_avatar">avatar</string>
     <string name="handle">\@%1$s</string>
-
+    <!-- Probably not the right idea. -->
+    <string name="bullet">\u2022</string>
 </resources>
