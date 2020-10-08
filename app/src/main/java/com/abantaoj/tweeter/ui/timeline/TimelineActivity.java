@@ -32,7 +32,7 @@ public class TimelineActivity extends AppCompatActivity {
     private TwitterClient client;
     private List<Tweet> tweets;
     private TimelineAdapter adapter;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +42,8 @@ public class TimelineActivity extends AppCompatActivity {
         client = TweeterApplication.getTwitterClient(this);
         tweets = new ArrayList<>();
         adapter = new TimelineAdapter(this, tweets);
+
+
 
         setupRecyclerView();
         setupRefreshLayout();
@@ -57,10 +59,21 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+
+        scrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                Log.i(TAG, "load more data" + page);
+                loadMoreData();
+            }
+        };
+
         RecyclerView recyclerView = binding.timelineRecyclerView;
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        recyclerView.addOnScrollListener(scrollListener);
     }
 
     private void populateHomeTimeline() {
@@ -75,15 +88,41 @@ public class TimelineActivity extends AppCompatActivity {
                     adapter.addAll(Tweet.fromJsonArray(jsonArray));
                     binding.timelineSwipeRefreshLayout.setRefreshing(false);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "populateHomeTimeline add fail", e);
+                    binding.timelineSwipeRefreshLayout.setRefreshing(false);
                 }
-
             }
 
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.e(TAG, "error" + response, throwable);
+                binding.timelineSwipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
+
+    private void loadMoreData() {
+        if (tweets.isEmpty()) {
+            return;
+        }
+
+        client.getAdditionalTweets(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                Log.i(TAG, "load more success");
+                JSONArray jsonArray = json.jsonArray;
+
+                try {
+                    adapter.addAll(Tweet.fromJsonArray(jsonArray));
+                } catch (Exception e) {
+                    Log.e(TAG, "loadMoreData add fail", e);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.e(TAG, "error", throwable);
+            }
+        }, tweets.get(tweets.size() - 1).id - 1);
     }
 }
