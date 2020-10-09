@@ -3,15 +3,19 @@ package com.abantaoj.tweeter.models;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Parcel
 public class Tweet {
     public long id;
     public String body;
     public String createdAt;
     public User user;
+
+    public Tweet() {}
 
     public Tweet(long id, String body, String createdAt, User user) {
         this.id = id;
@@ -23,7 +27,7 @@ public class Tweet {
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         return new Tweet(
                 jsonObject.getLong("id"),
-                jsonObject.getString("text"),
+                jsonObject.getString("full_text"),
                 jsonObject.getString("created_at"),
                 User.fromJson(jsonObject.getJSONObject("user"))
         );

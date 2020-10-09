@@ -2,11 +2,15 @@ package com.abantaoj.tweeter.models;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
+@Parcel
 public class User {
     public String name;
     public String handle;
     public String profileImageUrl;
+
+    public User() {}
 
     public User(String name, String handle, String profileImageUrl) {
         this.name = name;

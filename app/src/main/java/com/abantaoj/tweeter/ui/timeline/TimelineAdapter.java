@@ -1,6 +1,7 @@
 package com.abantaoj.tweeter.ui.timeline;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,20 +12,41 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abantaoj.tweeter.R;
 import com.abantaoj.tweeter.databinding.ItemTimelineBinding;
 import com.abantaoj.tweeter.models.Tweet;
+import com.abantaoj.tweeter.ui.details.DetailsActivity;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
 public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHolder> {
+    public static String TWEET = "TWEET";
     private Context context;
     private List<Tweet> tweets;
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         ItemTimelineBinding binding;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             binding = ItemTimelineBinding.bind(itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+
+                    if (pos == RecyclerView.NO_POSITION) {
+                        return;
+                    }
+
+                    Tweet tweet = tweets.get(pos);
+                    Intent intent = new Intent(context, DetailsActivity.class);
+                    intent.putExtra(TimelineAdapter.TWEET, Parcels.wrap(tweet));
+
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 

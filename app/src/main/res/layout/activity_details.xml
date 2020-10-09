@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="tweet"
+            type="com.abantaoj.tweeter.models.Tweet" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.details.DetailsActivity">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/details_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:maxHeight="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+            app:title="@string/details_toolbar_title" />
+
+        <ImageView
+            android:id="@+id/details_avatar_image_view"
+            android:layout_width="@dimen/avatar_size"
+            android:layout_height="@dimen/avatar_size"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/content_attr_avatar"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/details_toolbar"
+            app:profileImageUrl="@{tweet.user.profileImageUrl}"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/details_username_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@{tweet.user.name}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/details_avatar_image_view"
+            app:layout_constraintTop_toTopOf="@+id/details_avatar_image_view"
+            tools:text="User Name" />
+
+        <TextView
+            android:id="@+id/details_handle_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="7dp"
+            android:text="@{@string/handle(tweet.user.handle)}"
+            app:layout_constraintBottom_toBottomOf="@+id/details_avatar_image_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/details_avatar_image_view"
+            app:layout_constraintTop_toBottomOf="@+id/details_username_text_view"
+            tools:text="\@username" />
+
+        <TextView
+            android:id="@+id/details_body_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:autoLink="all"
+            android:linksClickable="true"
+            android:text="@{tweet.body}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/details_handle_text_view"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="Donec bibendum mauris orci, eu viverra diam pellentesque sit amet. Etiam porttitor viverra purus. Ut lacinia ex magna, nec aliquam justo egestas et. Ut vel nulla leo. Suspendisse fermentum ut sapien id dapibus. Mauris ullamcorper finibus purus vel laoreet. Proin rutrum tortor eu." />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

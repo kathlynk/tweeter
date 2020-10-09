@@ -10,4 +10,6 @@
     <string name="handle">\@%1$s</string>
     <!-- Probably not the right idea. -->
     <string name="bullet">\u2022</string>
+    <string name="login">Login</string>
+    <string name="details_toolbar_title">Tweet</string>
 </resources>
