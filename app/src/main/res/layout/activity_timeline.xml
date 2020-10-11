@@ -8,6 +8,19 @@
         android:layout_height="match_parent"
         tools:context=".ui.timeline.TimelineActivity">
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/timeline_compose_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_compose_tweet"
+            app:backgroundTint="@color/colorAccent"
+            app:layout_anchor="@+id/timeline_swipe_refresh_layout"
+            app:layout_anchorGravity="end|bottom"
+            app:maxImageSize="48dp"
+            app:useCompatPadding="true" />
+
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
@@ -41,7 +54,10 @@
                 android:id="@+id/timeline_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+
+            </androidx.recyclerview.widget.RecyclerView>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
