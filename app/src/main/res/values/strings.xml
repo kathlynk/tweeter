@@ -12,4 +12,8 @@
     <string name="bullet">\u2022</string>
     <string name="login">Login</string>
     <string name="details_toolbar_title">Tweet</string>
+    <string name="compose_tweet">Tweet</string>
+    <string name="empty_compose_tweet">What\'s happening?</string>
+    <string name="compose_tweet_empty_error">Cannot post an empty tweet!</string>
+    <string name="compose_tweet_too_long_error">Tweet exceeds 280 characters.</string>
 </resources>

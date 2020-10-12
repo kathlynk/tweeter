@@ -1,24 +1,27 @@
 package com.abantaoj.tweeter.ui.timeline;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.abantaoj.tweeter.R;
 import com.abantaoj.tweeter.TweeterApplication;
 import com.abantaoj.tweeter.databinding.ActivityTimelineBinding;
 import com.abantaoj.tweeter.models.Tweet;
 import com.abantaoj.tweeter.services.TwitterClient;
+import com.abantaoj.tweeter.ui.compose.ComposeActivity;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,7 @@ import java.util.List;
 import okhttp3.Headers;
 
 public class TimelineActivity extends AppCompatActivity {
+    private static final int REQUEST_CODE = 20;
     private final String TAG = this.getClass().getSimpleName();
 
     private ActivityTimelineBinding binding;
@@ -43,11 +47,28 @@ public class TimelineActivity extends AppCompatActivity {
         tweets = new ArrayList<>();
         adapter = new TimelineAdapter(this, tweets);
 
-
-
         setupRecyclerView();
         setupRefreshLayout();
+        binding.timelineComposeButton.setOnClickListener(v -> {
+            startActivityForResult(
+                    new Intent(this, ComposeActivity.class),
+                    REQUEST_CODE
+            );
+        });
         populateHomeTimeline();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            assert data != null;
+            Tweet tweet = Parcels.unwrap(data.getParcelableExtra(ComposeActivity.class.getSimpleName()));
+            tweets.add(0, tweet);
+            adapter.notifyItemChanged(0);
+            binding.timelineRecyclerView.scrollToPosition(0);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void setupRefreshLayout() {
