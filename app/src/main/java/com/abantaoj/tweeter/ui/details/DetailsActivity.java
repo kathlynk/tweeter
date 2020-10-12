@@ -23,7 +23,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_details);
 
-        binding.detailsToolbar.setNavigationOnClickListener(v -> startActivity(new Intent(this, TimelineActivity.class)));
+        binding.detailsToolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         Tweet tweet = Parcels.unwrap(getIntent().getParcelableExtra(TimelineAdapter.TWEET));
 
