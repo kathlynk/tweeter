@@ -16,4 +16,8 @@
     <string name="empty_compose_tweet">What\'s happening?</string>
     <string name="compose_tweet_empty_error">Cannot post an empty tweet!</string>
     <string name="compose_tweet_too_long_error">Tweet exceeds 280 characters.</string>
+    <plurals name="compose_tweet_chars_remain">
+        <item quantity="one">%d character remaining</item>
+        <item quantity="other">%d characters remaining</item>
+    </plurals>
 </resources>

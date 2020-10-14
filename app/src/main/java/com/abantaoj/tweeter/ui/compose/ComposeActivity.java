@@ -1,7 +1,10 @@
 package com.abantaoj.tweeter.ui.compose;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,6 +35,8 @@ public class ComposeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_compose);
 
+        updateCharactersRemainingText(MAX_TWEET_LENGTH);
+
         binding.composeToolbar.setNavigationOnClickListener(v -> {
             Intent intent = new Intent(this, TimelineActivity.class);
             setResult(RESULT_CANCELED, intent);
@@ -47,6 +52,23 @@ public class ComposeActivity extends AppCompatActivity {
                 showToastError(getString(R.string.compose_tweet_too_long_error));
             } else {
                 postTweet(tweetContent);
+            }
+        });
+
+        binding.composeTweetMultilineTextView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                updateCharactersRemainingText(Math.max(MAX_TWEET_LENGTH - s.length(), 0));
             }
         });
     }
@@ -78,5 +100,11 @@ public class ComposeActivity extends AppCompatActivity {
             }
         }, tweetContent);
 
+    }
+
+    private void updateCharactersRemainingText(int charsRemain) {
+        Resources res = getResources();
+
+        binding.composeTweetCharsRemainTextView.setText(res.getQuantityString(R.plurals.compose_tweet_chars_remain, charsRemain, charsRemain));
     }
 }

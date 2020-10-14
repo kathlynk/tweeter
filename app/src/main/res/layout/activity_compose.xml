@@ -46,18 +46,28 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
             android:background="@drawable/transparent"
             android:ems="10"
             android:gravity="start|top"
             android:hint="@string/empty_compose_tweet"
             android:inputType="textMultiLine"
             android:minLines="6"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/compose_toolbar"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/compose_toolbar" />
+
+        <TextView
+            android:id="@+id/compose_tweet_chars_remain_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:textAlignment="textEnd"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/compose_tweet_multiline_text_view"
+            tools:text="280 characters remaining" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
