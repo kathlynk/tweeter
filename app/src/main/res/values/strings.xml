@@ -17,6 +17,9 @@
     <string name="compose_tweet_empty_error">Cannot post an empty tweet!</string>
     <string name="compose_tweet_too_long_error">Tweet exceeds 280 characters.</string>
     <string name="timeline_no_connectivity_get_tweets">Unable to contact Tweeter. Loading last tweets.</string>
+    <string name="dialog_save_draft">Save draft?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <plurals name="compose_tweet_chars_remain">
         <item quantity="one">%d character remaining</item>
         <item quantity="other">%d characters remaining</item>

@@ -1,7 +1,11 @@
 package com.abantaoj.tweeter.ui.compose;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -32,7 +36,8 @@ public class ComposeFragment extends DialogFragment {
     private int MAX_TWEET_LENGTH = 280;
     private FragmentComposeBinding binding;
     private String TAG = this.getClass().getSimpleName();
-
+    private String COMPOSE_TWEET = "COMPOSE_TWEET";
+    private SharedPreferences pref;
 
     public interface ComposeDialogListener {
         void onFinishComposeDialog(Tweet tweet);
@@ -50,8 +55,18 @@ public class ComposeFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_compose, container, false);
+        pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String existingText = pref.getString(COMPOSE_TWEET, "");
 
-        updateCharactersRemainingText(MAX_TWEET_LENGTH);
+        if (!existingText.isEmpty()) {
+            binding.composeTweetMultilineTextView.setText(existingText);
+            SharedPreferences.Editor edit = pref.edit();
+            edit.clear();
+            edit.apply();
+        }
+
+        updateCharactersRemainingText(Math.max(MAX_TWEET_LENGTH - existingText.length(), 0));
+
 
         binding.composeToolbar.setNavigationOnClickListener(v -> dismiss());
 
@@ -96,6 +111,32 @@ public class ComposeFragment extends DialogFragment {
         super.onResume();
     }
 
+    @Override
+    public void dismiss() {
+        String tweetText = binding.composeTweetMultilineTextView.getText().toString();
+
+        if (!tweetText.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage(R.string.dialog_save_draft)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.yes, (dialog, id) -> {
+                        SharedPreferences pref =
+                                PreferenceManager.getDefaultSharedPreferences(getContext());
+                        SharedPreferences.Editor edit = pref.edit();
+                        edit.putString(COMPOSE_TWEET, tweetText);
+                        edit.apply();
+
+                        super.dismiss();
+                    })
+                    .setNegativeButton(R.string.no, (dialog, id) -> {
+                        super.dismiss();
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        } else {
+            super.dismiss();
+        }
+    }
 
     private void showToastError(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
