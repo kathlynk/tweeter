@@ -1,5 +1,11 @@
 package com.abantaoj.tweeter.models;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,10 +15,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Parcel
+@Entity(foreignKeys = @ForeignKey(entity = User.class, parentColumns = "id", childColumns = "userId"))
 public class Tweet {
+    @PrimaryKey
+    @ColumnInfo
     public long id;
+
+    @ColumnInfo
     public String body;
+
+    @ColumnInfo
     public String createdAt;
+
+    @ColumnInfo
+    public long userId;
+
+    @Ignore
     public User user;
 
     public Tweet() {}
@@ -22,9 +40,12 @@ public class Tweet {
         this.body = body;
         this.createdAt = createdAt;
         this.user = user;
+        this.userId = user.id;
     }
 
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
+        User user = User.fromJson(jsonObject.getJSONObject("user"));
+
         return new Tweet(
                 jsonObject.getLong("id"),
                 jsonObject.getString("full_text"),

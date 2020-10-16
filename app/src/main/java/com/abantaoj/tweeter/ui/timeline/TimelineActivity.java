@@ -1,7 +1,9 @@
 package com.abantaoj.tweeter.ui.timeline;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -15,6 +17,9 @@ import com.abantaoj.tweeter.R;
 import com.abantaoj.tweeter.TweeterApplication;
 import com.abantaoj.tweeter.databinding.ActivityTimelineBinding;
 import com.abantaoj.tweeter.models.Tweet;
+import com.abantaoj.tweeter.models.TweetDao;
+import com.abantaoj.tweeter.models.TweetWithUser;
+import com.abantaoj.tweeter.models.User;
 import com.abantaoj.tweeter.services.TwitterClient;
 import com.abantaoj.tweeter.ui.compose.ComposeFragment;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -23,6 +28,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import okhttp3.Headers;
 
@@ -34,6 +40,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
     private List<Tweet> tweets;
     private TimelineAdapter adapter;
     private FragmentManager fragmentManager;
+    private TweetDao tweetDao;
+    private ExecutorService executorService;
+    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +53,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         tweets = new ArrayList<>();
         adapter = new TimelineAdapter(this, tweets);
         fragmentManager = getSupportFragmentManager();
+        tweetDao = ((TweeterApplication) getApplicationContext()).getTweeterDatabase().tweetDao();
+        executorService = ((TweeterApplication) getApplicationContext()).getExecutorService();
+        activity = this;
 
         setupRecyclerView();
         setupRefreshLayout();
@@ -51,6 +63,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
             ComposeFragment fragment = ComposeFragment.newInstance();
             fragment.show(fragmentManager, "fragment_compose");
         });
+
         populateHomeTimeline();
     }
 
@@ -82,6 +95,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
     }
 
     private void populateHomeTimeline() {
+        binding.timelineSwipeRefreshLayout.setRefreshing(true);
+
         client.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -90,7 +105,12 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
 
                 try {
                     adapter.clear();
-                    adapter.addAll(Tweet.fromJsonArray(jsonArray));
+                    final List<Tweet> tweets = Tweet.fromJsonArray(jsonArray);
+                    final List<User> users = User.fromJsonTweetArray(tweets);
+                    adapter.addAll(tweets);
+
+                    saveLatestTweetsToDatabase(tweets, users);
+
                     binding.timelineSwipeRefreshLayout.setRefreshing(false);
                 } catch (Exception e) {
                     Log.e(TAG, "populateHomeTimeline add fail", e);
@@ -101,8 +121,31 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.e(TAG, "error" + response, throwable);
+                populateFromDatabase();
                 binding.timelineSwipeRefreshLayout.setRefreshing(false);
             }
+        });
+    }
+
+    private void saveLatestTweetsToDatabase(List<Tweet> tweets, List<User> users) {
+        executorService
+                .execute(() -> ((TweeterApplication) getApplicationContext()).getTweeterDatabase()
+                        .runInTransaction(() -> {
+                            tweetDao.insertModel(users.toArray(new User[0]));
+                            tweetDao.insertModel(tweets.toArray(new Tweet[0]));
+
+                            Log.d(TAG, "Tweets inserted");
+                        }));
+    }
+
+    private void populateFromDatabase() {
+        activity.runOnUiThread(() -> Toast.makeText(activity, R.string.timeline_no_connectivity_get_tweets, Toast.LENGTH_SHORT).show());
+
+        executorService.execute(() -> {
+            List<TweetWithUser> tweetsFromDatabase = tweetDao.recentItems();
+            activity.runOnUiThread(() -> adapter.clear());
+            List<Tweet> tweetList = TweetWithUser.getTweetList(tweetsFromDatabase);
+            activity.runOnUiThread(() -> adapter.addAll(tweetList));
         });
     }
 
@@ -110,6 +153,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         if (tweets.isEmpty()) {
             return;
         }
+        binding.timelineSwipeRefreshLayout.setRefreshing(true);
 
         client.getAdditionalTweets(new JsonHttpResponseHandler() {
             @Override
@@ -119,14 +163,17 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
 
                 try {
                     adapter.addAll(Tweet.fromJsonArray(jsonArray));
+                    binding.timelineSwipeRefreshLayout.setRefreshing(false);
                 } catch (Exception e) {
                     Log.e(TAG, "loadMoreData add fail", e);
+                    binding.timelineSwipeRefreshLayout.setRefreshing(false);
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.e(TAG, "error", throwable);
+                binding.timelineSwipeRefreshLayout.setRefreshing(false);
             }
         }, tweets.get(tweets.size() - 1).id - 1);
     }
