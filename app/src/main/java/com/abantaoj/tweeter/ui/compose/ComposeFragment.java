@@ -25,9 +25,12 @@ import com.abantaoj.tweeter.TweeterApplication;
 import com.abantaoj.tweeter.databinding.FragmentComposeBinding;
 import com.abantaoj.tweeter.models.Tweet;
 import com.abantaoj.tweeter.services.TwitterClient;
+import com.abantaoj.tweeter.ui.timeline.TimelineActivity;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.json.JSONException;
+
+import java.util.StringJoiner;
 
 import okhttp3.Headers;
 
@@ -58,15 +61,33 @@ public class ComposeFragment extends DialogFragment {
         pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         String existingText = pref.getString(COMPOSE_TWEET, "");
 
-        if (!existingText.isEmpty()) {
+        if (getArguments() != null) {
+            String titleOfIntent = getArguments().getString(TimelineActivity.SEND_ACTION_TITLE);
+            String urlOfIntent = getArguments().getString(TimelineActivity.SEND_ACTION_URL);
+            StringBuilder builder = new StringBuilder();
+
+            if (titleOfIntent != null) {
+                builder.append(titleOfIntent);
+                builder.append("\n");
+            }
+
+            if (urlOfIntent != null) {
+                builder.append(urlOfIntent);
+            }
+
+            String body = builder.toString();
+            binding.composeTweetMultilineTextView.setText(body);
+            updateCharactersRemainingText(body.length());
+        } else if (existingText != null) {
             binding.composeTweetMultilineTextView.setText(existingText);
             SharedPreferences.Editor edit = pref.edit();
             edit.clear();
             edit.apply();
+
+            updateCharactersRemainingText(existingText.length());
+        } else {
+            updateCharactersRemainingText(0);
         }
-
-        updateCharactersRemainingText(Math.max(MAX_TWEET_LENGTH - existingText.length(), 0));
-
 
         binding.composeToolbar.setNavigationOnClickListener(v -> dismiss());
 
@@ -95,7 +116,7 @@ public class ComposeFragment extends DialogFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                updateCharactersRemainingText(Math.max(MAX_TWEET_LENGTH - s.length(), 0));
+                updateCharactersRemainingText(s.length());
             }
         });
 
@@ -153,7 +174,7 @@ public class ComposeFragment extends DialogFragment {
                     ComposeDialogListener listener = (ComposeDialogListener) getActivity();
                     assert listener != null;
                     listener.onFinishComposeDialog(tweet);
-                    dismiss();
+                    forceDismiss();
                 } catch (JSONException e) {
                     Log.e(TAG, "onSuccess fail", e);
                 }
@@ -167,8 +188,13 @@ public class ComposeFragment extends DialogFragment {
 
     }
 
-    private void updateCharactersRemainingText(int charsRemain) {
+    private void forceDismiss() {
+        super.dismiss();
+    }
+
+    private void updateCharactersRemainingText(int currentChars) {
         Resources res = getResources();
+        int charsRemain = Math.max(MAX_TWEET_LENGTH - currentChars, 0);
 
         binding.composeTweetCharsRemainTextView.setText(res.getQuantityString(R.plurals.compose_tweet_chars_remain, charsRemain, charsRemain));
     }

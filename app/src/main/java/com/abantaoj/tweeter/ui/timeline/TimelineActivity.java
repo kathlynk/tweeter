@@ -1,6 +1,7 @@
 package com.abantaoj.tweeter.ui.timeline;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -33,6 +34,9 @@ import java.util.concurrent.ExecutorService;
 import okhttp3.Headers;
 
 public class TimelineActivity extends AppCompatActivity implements ComposeFragment.ComposeDialogListener {
+    public static String SEND_ACTION_TITLE = "SEND_ACTION_TITLE";
+    public static String SEND_ACTION_URL = "SEND_ACTION_URL";
+
     private final String TAG = this.getClass().getSimpleName();
 
     private ActivityTimelineBinding binding;
@@ -65,6 +69,38 @@ public class TimelineActivity extends AppCompatActivity implements ComposeFragme
         });
 
         populateHomeTimeline();
+        checkForSendAction();
+    }
+
+    private void checkForSendAction() {
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (action != null) {
+            Log.d(TAG, action);
+        }
+
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            if ("text/plain".equals(type)) {
+                ComposeFragment fragment = ComposeFragment.newInstance();
+                Bundle bundle = new Bundle();
+
+                String titleOfPage = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+                String urlOfPage = intent.getStringExtra(Intent.EXTRA_TEXT);
+
+                if (titleOfPage != null) {
+                    bundle.putString(TimelineActivity.SEND_ACTION_TITLE, titleOfPage);
+                }
+
+                if (urlOfPage != null) {
+                    bundle.putString(TimelineActivity.SEND_ACTION_URL, urlOfPage);
+                }
+
+                fragment.setArguments(bundle);
+                fragment.show(fragmentManager, "fragment_compose");
+            }
+        }
     }
 
 
